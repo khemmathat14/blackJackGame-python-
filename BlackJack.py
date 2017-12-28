@@ -20,7 +20,6 @@ class player(object):
         return self.score
 
     def checkA(self,ch):
-        print(type(self.score))
         if ch == "A" and int(self.score) > 11:
             self.scorePlayer(1)
         elif ch == "A" and int(self.score) <12:
@@ -35,6 +34,26 @@ class player(object):
     def firstDraw(self):
         self.checkA(deck1.drawDeck())
         self.checkA(deck1.drawDeck())
+    
+    def runGame(self):
+        nonStop = True
+        while nonStop == True:
+            playerIn = raw_input("Hit or Stand : ")
+            if playerIn == 'HIT' :
+                self.checkA(deck1.drawDeck())
+                if self.score > 21:
+                    print("You score : %s"%(self.score))
+                    self.resetScore()
+                    break
+            elif playerIn == 'STAND':
+                #com draw to 17
+                while com.score < 17:
+                    com.checkA(deck1.drawDeck())
+                    if com.score > 21:
+                        com.resetScore()
+                    break
+                break
+            print("You score : %s"%(self.score))
 
 
 
@@ -58,23 +77,15 @@ class setdeck(object):
 
     #Card use
     def drawDeck(self):
-        print(self.lst)
         pop_item = self.lst.pop()
-        print(pop_item)
         if pop_item == "K" or pop_item == "Q" or pop_item == "J":
             pop_item = 10
-            print(pop_item)
         return pop_item
 
 
 
 
-amout = input("Please enter amout to bet : ")
-sam = player(100)
-sam.minus_bankroll(amout)
-print(sam.bankroll)
 
-com = player()
 
 
 
@@ -82,47 +93,43 @@ num = input("Enter volum deck: ")
 deck1 = setdeck(num)
 deck1.createDeck()
 deck1.shuffDeck()
+sam = player(100)
+
+gameOn = True
+
+while gameOn == True:
+    amout = input("Please enter amout to bet : ")
+    sam.minus_bankroll(amout)
+    print("You bankroll : %s"%(sam.bankroll))
+    sam.firstDraw()
+    print("You score : %s" %(sam.score))
+
+    com = player()
+    com.firstDraw()
+    print("Com score : %s" %(com.score))
 
 
+    sam.runGame() 
 
 
-sam.firstDraw()
-print(sam.score)
+    
+
+    if sam.score == 0 or com.score == 0 :
+        print("Bust")
+    print("You score : %s" %(sam.score))
+    print("Com score : %s" %(com.score))
+
+    #Win
+    if sam.score > com.score :
+        sam.add_bankroll(amout*2)
+    elif sam.score == com.score:
+        sam.add_bankroll(amout)
+
+    
+    print("You bankroll : %s"%(sam.bankroll))
 
 
-com.firstDraw()
-print(com.score)
-
-
-nonStop = True
-while nonStop == True:
-    playerIn = raw_input("Hit or Stand : ")
-    print(playerIn)
-    if playerIn == 'HIT' :
-        sam.checkA(deck1.drawDeck())
-        if sam.score > 21:
-            print(sam.score)
-            print("Bust You Lose")
-            sam.resetScore()
-            break
-    elif playerIn == 'STAND':
-        while com.score < 17:
-            com.checkA(deck1.drawDeck())
-            if com.score > 21:
-            com.resetScore()
-            break
+    if sam.bankroll <= 0:
+        print("You no money to bet ")
         break
-    print(sam.score)
 
-
- 
-
-
-print(com.score)
-print(sam.score)
-
-#Win
-if sam.score > com.score :
-    sam.add_bankroll(amout*2)
-
-print(sam.bankroll)
